@@ -1,18 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
 import pprint
+import dataBaseSeting as db
 #-----------------CONEXAO BANCO----------------------#
 import pyodbc
 
 conexao = None
 try:
-    server = '20.195.204.157'
-    database = 'Quanta_Faturas'
-    username = 'fs.devteam'
-    password = 'Full@2023!#%'
+    
+    server = db.server
+    database = db.database
+    username = db.username
+    password = db.password
 
-        # Crie a string de conexão
-    connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}'
+    # Crie a string de conexão
+    connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={db.server};DATABASE={db.database};UID={db.username};PWD={db.password}'
     conn = pyodbc.connect(connection_string)
     print("Conexão estabelecida com sucesso!")
     select = conn.cursor()
@@ -21,7 +23,7 @@ try:
 
 except pyodbc.Error as ex:  # ERRO DA CONEXÃO
     sqlstate = ex.args[0]
-    print("DEU RUIM AMIGO"+sqlstate)
+    print("falha na conexão"+sqlstate)
 #------------------------------------------------------#
 
 Cabecalho = {'user-agent': 'Mozilla/5.0'}
@@ -61,5 +63,5 @@ vermelho2Price = (vermelho2[vermelho2.find("R$")+2:110]).replace(",",".").strip(
 UpDateVermelho2= ("UPDATE DBO.BandeirasTarifarias SET valor_incremento = {0} WHERE bandeira = 'VERMELHA 2'".format(vermelho2Price))
 select.execute(UpDateVermelho2)
 
-tete = select.execute("SELECT * FROM DBO.BandeirasTarifarias").fetchall()
-print(tete)
+dataAll = select.execute("SELECT * FROM DBO.BandeirasTarifarias").fetchall()
+print(dataAll)
